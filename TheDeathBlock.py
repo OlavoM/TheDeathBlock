@@ -4,9 +4,6 @@ from enum import Enum
 
 pygame.init()
 
-SCREEN_HEIGHT = 600
-SCREEN_WIDTH = 1000
-play_surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 pygame.display.set_caption("The Death Block")
 
 
@@ -17,26 +14,18 @@ class Direction(Enum):
     LEFT = "left"
 
 
+def set_play_surface_config():
+    global SCREEN_HEIGHT, SCREEN_WIDTH, play_surface
+    SCREEN_HEIGHT = 600
+    SCREEN_WIDTH = 1000
+    play_surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+
+
 def set_config():
-    play_surface = pygame.display.set_mode((640,480))
     fps_clock = pygame.time.Clock()
     direction = ""
     change_direction = direction
-
-    return play_surface, fps_clock, direction, change_direction
-
-
-def joystick_connected():
-    # Xbox Controller
-    global joystick
-    pygame.joystick.init()
-    joystick_count = pygame.joystick.get_count()
-    if joystick_count == 0:
-        return False
-    else:
-        joystick = pygame.joystick.Joystick(0)
-        joystick.init()
-        return True
+    return fps_clock, direction, change_direction
 
 
 def set_background_music():
@@ -56,6 +45,11 @@ def set_colours():
     greenColour = pygame.Color(0,200,0)
 
 
+def draw_background(bg_image):
+    bg_resized = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    play_surface.blit(bg_resized, (0,0))
+
+
 def game_over():
     gameOverFont = pygame.font.Font("freesansbold.ttf", 72)
     gameOverSurf = gameOverFont.render("Game Over", True, greyColour)
@@ -66,6 +60,7 @@ def game_over():
     time.sleep(1)
     pygame.quit()
     sys.exit()
+
 
 def print_text(text):
     textFont = pygame.font.Font("freesansbold.ttf", 72)
@@ -121,13 +116,27 @@ def get_analog_stick_direction():
         return Direction.UP
 
 
-def main(config, joystickConnected):
-    play_surface, fps_clock, direction, change_direction = config
+def joystick_connected():
+    # Xbox Controller
+    global joystick
+    pygame.joystick.init()
+    joystick_count = pygame.joystick.get_count()
+    if joystick_count == 0:
+        return False
+    else:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        return True
 
+
+def main(config, joystickConnected):
+    fps_clock, direction, change_direction = config
     play_surface.fill(whiteColour)
     pygame.display.flip()
 
     while True:
+        draw_background(background_image)
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -148,13 +157,16 @@ def main(config, joystickConnected):
         if change_direction==Direction.DOWN:
                 print_text("Down")
         
-        play_surface.fill(whiteColour)
+        pygame.display.update()
         
         fps_clock.tick(18)
 
 
 #setBackgroundMusic()
 set_colours()
+set_play_surface_config()
 config_values = set_config()
 has_joystick = joystick_connected()
+background_image = pygame.image.load("resources/images/background/white_bg.png")
+
 main(config_values, has_joystick)
