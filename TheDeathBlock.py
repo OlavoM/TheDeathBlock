@@ -3,7 +3,10 @@ from pygame.locals import *
 from enum import Enum
 
 pygame.init()
-playSurface = pygame.display.set_mode((640,480))
+
+SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+play_surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 pygame.display.set_caption("The Death Block")
 
 
@@ -14,16 +17,16 @@ class Direction(Enum):
     LEFT = "left"
 
 
-def setConfig():
-    playSurface = pygame.display.set_mode((640,480))
-    fpsClock = pygame.time.Clock()
+def set_config():
+    play_surface = pygame.display.set_mode((640,480))
+    fps_clock = pygame.time.Clock()
     direction = ""
-    changeDirection = direction
+    change_direction = direction
 
-    return playSurface, fpsClock, direction, changeDirection
+    return play_surface, fps_clock, direction, change_direction
 
 
-def joystickConnected():
+def joystick_connected():
     # Xbox Controller
     global joystick
     pygame.joystick.init()
@@ -36,7 +39,7 @@ def joystickConnected():
         return True
 
 
-def setBackgroundMusic():
+def set_background_music():
     # Audio mixer for bg music
     pygame.mixer.init()
     pygame.mixer.music.load("bg_music/Blue Danube Strauss (No Copyright Music).mp3")
@@ -44,7 +47,7 @@ def setBackgroundMusic():
     pygame.mixer.music.play(-1) # Continuos replay
 
 
-def setColours():
+def set_colours():
     global redColour, blackColour, whiteColour, greyColour, greenColour
     redColour = pygame.Color(255, 0, 0)    
     blackColour = pygame.Color(0, 0, 0)
@@ -53,27 +56,27 @@ def setColours():
     greenColour = pygame.Color(0,200,0)
 
 
-def gameOver():
+def game_over():
     gameOverFont = pygame.font.Font("freesansbold.ttf", 72)
     gameOverSurf = gameOverFont.render("Game Over", True, greyColour)
     gameOverRect = gameOverSurf.get_rect()
     gameOverRect.midtop = (320, 10)
-    playSurface.blit(gameOverSurf, gameOverRect)
+    play_surface.blit(gameOverSurf, gameOverRect)
     pygame.display.flip()
     time.sleep(1)
     pygame.quit()
     sys.exit()
 
-def printText(text):
+def print_text(text):
     textFont = pygame.font.Font("freesansbold.ttf", 72)
     textSurf = textFont.render(text, True, greyColour)
     textRect = textSurf.get_rect()
     textRect.midtop = (320, 10)
-    playSurface.blit(textSurf, textRect)
+    play_surface.blit(textSurf, textRect)
     pygame.display.flip()
 
 
-def getDPadDirection():
+def get_dPad_direction():
     d_pad = (joystick.get_hat(0)[0], joystick.get_hat(0)[1])
     if d_pad == (1, 0):
         return Direction.RIGHT
@@ -85,7 +88,7 @@ def getDPadDirection():
         return Direction.DOWN
 
 
-def getKeyDirection(event):
+def get_key_direction(event):
     if event.key==K_RIGHT or event.key==ord("d"):
         return Direction.RIGHT
     if event.key==K_LEFT or event.key==ord("a"):
@@ -98,7 +101,7 @@ def getKeyDirection(event):
         pygame.event.post(pygame.event.Event(QUIT))
 
 
-def getAnalogStickDirection():
+def get_analog_stick_direction():
     x_axis = joystick.get_axis(0)
     y_axis = joystick.get_axis(1)
 
@@ -119,9 +122,9 @@ def getAnalogStickDirection():
 
 
 def main(config, joystickConnected):
-    playSurface, fpsClock, direction, changeDirection = config
+    play_surface, fps_clock, direction, change_direction = config
 
-    playSurface.fill(whiteColour)
+    play_surface.fill(whiteColour)
     pygame.display.flip()
 
     while True:
@@ -130,28 +133,28 @@ def main(config, joystickConnected):
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
-                changeDirection = getKeyDirection(event)
+                change_direction = get_key_direction(event)
             elif joystickConnected and (event.type == pygame.JOYHATMOTION):
-                changeDirection = getDPadDirection()
+                change_direction = get_dPad_direction()
             elif joystickConnected and event.type == pygame.JOYAXISMOTION:
-                changeDirection = getAnalogStickDirection()
+                change_direction = get_analog_stick_direction()
             
-        if changeDirection==Direction.RIGHT:
-                printText("Right")
-        if changeDirection==Direction.LEFT:
-                printText("Left")
-        if changeDirection==Direction.UP:
-                printText("Up")
-        if changeDirection==Direction.DOWN:
-                printText("Down")
+        if change_direction==Direction.RIGHT:
+                print_text("Right")
+        if change_direction==Direction.LEFT:
+                print_text("Left")
+        if change_direction==Direction.UP:
+                print_text("Up")
+        if change_direction==Direction.DOWN:
+                print_text("Down")
         
-        playSurface.fill(whiteColour)
+        play_surface.fill(whiteColour)
         
-        fpsClock.tick(18)
+        fps_clock.tick(18)
 
 
 #setBackgroundMusic()
-setColours()
-configValues = setConfig()
-hasJoystick = joystickConnected()
-main(configValues, hasJoystick)
+set_colours()
+config_values = set_config()
+has_joystick = joystick_connected()
+main(config_values, has_joystick)
