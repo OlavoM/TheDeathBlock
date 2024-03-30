@@ -1,6 +1,7 @@
 import pygame, sys, time, random
 from pygame.locals import *
 from enum import Enum
+from fighter import Fighter
 
 pygame.init()
 
@@ -134,8 +135,14 @@ def main(config, joystickConnected):
     play_surface.fill(whiteColour)
     pygame.display.flip()
 
+    fighter_one = Fighter(200, 320)
+    fighter_two = Fighter(700, 320)
+
     while True:
         draw_background(background_image)
+
+        fighter_one.draw(play_surface)
+        fighter_two.draw(play_surface)
 
         for event in pygame.event.get():
             if event.type == QUIT:
